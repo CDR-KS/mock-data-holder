@@ -87,8 +87,7 @@ namespace CDR.DataHolder.IdentityServer
 
             var connectionStr = _configuration.GetConnectionString("ResourceDatabase");
 
-            services.AddDbContext<DataHolderDatabaseContext>(options =>
-                    options.UseSqlite(connectionStr));
+            services.AddDbContext<DataHolderDatabaseContext>(options => options.UseSqlServer(connectionStr));
 
             string connectionString = _configuration.GetConnectionString("IdentityServerStoreDatabase");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
@@ -119,25 +118,19 @@ namespace CDR.DataHolder.IdentityServer
                 .AddCertificateSigningCredential(_configuration)
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlite(
-                        connectionString,
-                        sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlite(
-                        connectionString,
-                        sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 .AddInMemoryIdentityResources(InMemoryConfig.IdentityResources)
                 .AddInMemoryApiResources(InMemoryConfig.Apis)
                 .AddInMemoryApiScopes(InMemoryConfig.ApiScopes)
                 .AddProfileService<ProfileService>();
 
-            services.AddDbContext<PersistedGrantDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            services.AddDbContext<DataHolderDatabaseContext>(options =>
-                options.UseSqlite(_configuration.GetConnectionString("ResourceDatabase")));
+            services.AddDbContext<PersistedGrantDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<DataHolderDatabaseContext>(options => options.UseSqlServer(_configuration.GetConnectionString("ResourceDatabase")));
 
             // override original IdentityServer validator because it doesn't follow CDS specs (redirect_uri should not be required)
             services.AddTransient<ITokenResponseGenerator, Services.TokenResponseGenerator>();

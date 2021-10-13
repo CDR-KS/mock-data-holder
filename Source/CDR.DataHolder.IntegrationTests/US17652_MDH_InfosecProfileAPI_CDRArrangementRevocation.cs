@@ -1,14 +1,14 @@
+using CDR.DataHolder.IntegrationTests.Extensions;
+using CDR.DataHolder.IntegrationTests.Fixtures;
+using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
-using Microsoft.Data.Sqlite;
 using Xunit;
-using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
-using CDR.DataHolder.IntegrationTests.Extensions;
-using CDR.DataHolder.IntegrationTests.Fixtures;
 
 #nullable enable
 
@@ -24,18 +24,18 @@ namespace CDR.DataHolder.IntegrationTests
 
         static int CountPersistedGrant(string persistedGrantType, string? key = null)
         {
-            using var connection = new SqliteConnection(IDENTITYSERVER_CONNECTIONSTRING);
+            using var connection = new SqlConnection(IDENTITYSERVER_CONNECTIONSTRING);
             connection.Open();
 
-            SqliteCommand selectCommand;
+            SqlCommand selectCommand;
             if (key != null)
             {
-                selectCommand = new SqliteCommand($"select count(*) from persistedgrants where type=@type and key=@key", connection);
+                selectCommand = new SqlCommand($"select count(*) from persistedgrants where type=@type and key=@key", connection);
                 selectCommand.Parameters.AddWithValue("@key", key);
             }
             else
             {
-                selectCommand = new SqliteCommand($"select count(*) from persistedgrants where type=@type", connection);
+                selectCommand = new SqlCommand($"select count(*) from persistedgrants where type=@type", connection);
             }
             selectCommand.Parameters.AddWithValue("@type", persistedGrantType);
 

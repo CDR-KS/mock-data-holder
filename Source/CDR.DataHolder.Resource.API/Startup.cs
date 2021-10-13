@@ -77,8 +77,7 @@ namespace CDR.DataHolder.Resource.API
 
             // This is to manage the EF database context through the web API DI.
             // If this is to be done inside the repository project itself, we need to manage the context life-cycle explicitly.
-            services.AddDbContext<DataHolderDatabaseContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataHolderDatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Enable authentication and authorisation
             AddAuthenticationAuthorization(services, Configuration);

@@ -39,7 +39,7 @@ namespace CDR.DataHolder.IntegrationTests
             var effectivePage = page ?? 1;
             var effectivePageSize = pageSize ?? 25;
 
-            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(DATAHOLDER_CONNECTIONSTRING).Options);
+            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(DATAHOLDER_CONNECTIONSTRING).Options);
 
             var accounts = dbContext.Accounts.AsNoTracking()
                 .Include(account => account.Customer)

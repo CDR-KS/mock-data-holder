@@ -1,13 +1,13 @@
+using CDR.DataHolder.IntegrationTests.Extensions;
+using CDR.DataHolder.IntegrationTests.Fixtures;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
-using Microsoft.Data.Sqlite;
 using Xunit;
-using CDR.DataHolder.IntegrationTests.Extensions;
-using CDR.DataHolder.IntegrationTests.Fixtures;
 
 #nullable enable
 
@@ -207,7 +207,7 @@ namespace CDR.DataHolder.IntegrationTests
             static void HideSoftwareProduct()
             {
                 // Hide in identity server
-                using (var connection = new SqliteConnection(IDENTITYSERVER_CONNECTIONSTRING))
+                using (var connection = new SqlConnection(IDENTITYSERVER_CONNECTIONSTRING))
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($@"update clients set clientid = 'foo { SOFTWAREPRODUCT_ID.ToLower() }' where clientid = '{ SOFTWAREPRODUCT_ID.ToLower() }'");
@@ -215,7 +215,7 @@ namespace CDR.DataHolder.IntegrationTests
                 }
 
                 // Hide in dataholder
-                using (var connection = new SqliteConnection(DATAHOLDER_CONNECTIONSTRING))
+                using (var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING))
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($@"update softwareproduct set softwareproductid = 'foo { SOFTWAREPRODUCT_ID }' where softwareproductid = '{ SOFTWAREPRODUCT_ID }'");
@@ -226,7 +226,7 @@ namespace CDR.DataHolder.IntegrationTests
             static void RestoreSoftwareProduct()
             {
                 // Restore in identity server
-                using (var connection = new SqliteConnection(IDENTITYSERVER_CONNECTIONSTRING))
+                using (var connection = new SqlConnection(IDENTITYSERVER_CONNECTIONSTRING))
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($@"update clients set clientid = '{ SOFTWAREPRODUCT_ID.ToLower() }' where clientid = 'foo { SOFTWAREPRODUCT_ID.ToLower() }'");
@@ -234,7 +234,7 @@ namespace CDR.DataHolder.IntegrationTests
                 }
 
                 // Restore in dataholder
-                using (var connection = new SqliteConnection(DATAHOLDER_CONNECTIONSTRING))
+                using (var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING))
                 {
                     connection.Open();
                     connection.ExecuteNonQuery($@"update softwareproduct set softwareproductid = '{ SOFTWAREPRODUCT_ID }' where softwareproductid = 'foo { SOFTWAREPRODUCT_ID }'");

@@ -33,7 +33,7 @@ namespace CDR.DataHolder.IntegrationTests
         //     var _date1 = DateTime.Parse(date1);
         //     var _date2 = DateTime.Parse(date2);
 
-        //     using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(SQLITECONNECTIONSTRING).Options);
+        //     using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(SQLITECONNECTIONSTRING).Options);
 
         //     var transactions = dbContext.Transactions.AsNoTracking()
         //         .Select(transaction => new
@@ -74,7 +74,7 @@ namespace CDR.DataHolder.IntegrationTests
             var effectiveOldestTime = oldestTime;
             if (effectiveOldestTime == null) { effectiveOldestTime = DEFAULT_EFFECTIVEOLDESTTIME; }
 
-            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(DATAHOLDER_CONNECTIONSTRING).Options);
+            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(DATAHOLDER_CONNECTIONSTRING).Options);
 
             var transactions = dbContext.Transactions.AsNoTracking()
                 .Include(transaction => transaction.Account)
