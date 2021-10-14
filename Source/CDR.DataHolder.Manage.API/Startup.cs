@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CDR.DataHolder.API.Infrastructure.Middleware;
 using CDR.DataHolder.Domain.Repositories;
 using CDR.DataHolder.Repository;
+using Serilog;
 
 namespace CDR.DataHolder.Manage.API
 {
@@ -33,8 +34,7 @@ namespace CDR.DataHolder.Manage.API
 
             // This is to manage the EF database context through the web API DI.
             // If this is to be done inside the repository project itself, we need to manage the context life-cycle explicitly.
-            services.AddDbContext<DataHolderDatabaseContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataHolderDatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IStatusRepository, StatusRepository>();
 
@@ -48,6 +48,8 @@ namespace CDR.DataHolder.Manage.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 

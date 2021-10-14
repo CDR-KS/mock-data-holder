@@ -19,7 +19,7 @@ namespace CDR.DataHolder.Repository.Infrastructure
 		public DataHolderDatabaseContext CreateDbContext(string[] args)
 		{
 			// Copy the connection string into here to create the Initial Migration using EFCore tools
-			// eg. Server=(localdb)\\MSSQLLocalDB;Database=cdr-register;Integrated Security=true
+			// eg. Server=(localdb)\\MSSQLLocalDB;Database=cdr-mdh;Integrated Security=true
 			// From Package Manager Console > Select Repository as the start up project
 			// Delete any existing migrations and ContextModelSnapshots
 			// execute Add-Migration "Init"

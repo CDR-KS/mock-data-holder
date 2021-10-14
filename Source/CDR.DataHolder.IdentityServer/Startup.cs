@@ -41,6 +41,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 namespace CDR.DataHolder.IdentityServer
 {
@@ -280,6 +281,8 @@ namespace CDR.DataHolder.IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
+            app.UseSerilogRequestLogging();
+
             // This is to set the IDSVR base uri during redirects. Or else, it will the localhost which is not ideal when hosted.
             app.Use(async (ctx, next) =>
             {
