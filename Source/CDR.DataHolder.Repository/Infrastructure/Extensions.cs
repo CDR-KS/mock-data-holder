@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
-using CDR.DataHolder.Repository.Entities;
+﻿using CDR.DataHolder.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace CDR.DataHolder.Repository.Infrastructure
 {
-	public static class Extensions
+    public static class Extensions
     {
         private static Regex datetimeMatchRegex = new Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z", RegexOptions.Compiled);
 
@@ -103,11 +103,20 @@ namespace CDR.DataHolder.Repository.Infrastructure
                     logger.LogInformation("Removing the existing data from the repository...");
 
                     // Remove all existing account data in the system
+                    var existingTxns = await dataHolderDatabaseContext.Transactions.AsNoTracking().ToListAsync();
                     var existingCustomers = await dataHolderDatabaseContext.Customers.AsNoTracking().ToListAsync();
                     var existingPersons = await dataHolderDatabaseContext.Persons.AsNoTracking().ToListAsync();
                     var existingOrgs = await dataHolderDatabaseContext.Organisations.AsNoTracking().ToListAsync();
+
+                    dataHolderDatabaseContext.RemoveRange(existingTxns);
+                    dataHolderDatabaseContext.SaveChanges();
+
                     dataHolderDatabaseContext.RemoveRange(existingCustomers);
+                    dataHolderDatabaseContext.SaveChanges();
+
                     dataHolderDatabaseContext.RemoveRange(existingPersons);
+                    dataHolderDatabaseContext.SaveChanges();
+
                     dataHolderDatabaseContext.RemoveRange(existingOrgs);
                     dataHolderDatabaseContext.SaveChanges();
 
@@ -117,7 +126,6 @@ namespace CDR.DataHolder.Repository.Infrastructure
                     dataHolderDatabaseContext.SaveChanges();
 
                     logger.LogInformation("Existing data removed from the repository.");
-
                     logger.LogInformation("Adding JSON data to repository...");
 
                     // Offset seed data relative to the current date.
