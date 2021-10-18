@@ -218,7 +218,7 @@ namespace CDR.DataHolder.IntegrationTests
                 using (var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING))
                 {
                     connection.Open();
-                    connection.ExecuteNonQuery($@"update softwareproduct set softwareproductid = 'foo { SOFTWAREPRODUCT_ID }' where softwareproductid = '{ SOFTWAREPRODUCT_ID }'");
+                    connection.ExecuteNonQuery($@"DELETE FROM softwareproduct WHERE softwareproductid = '{ SOFTWAREPRODUCT_ID }'");
                     if (connection.ExecuteScalarInt32($@"select count(*) from softwareproduct where softwareproductid = '{ SOFTWAREPRODUCT_ID }'") != 0) throw new Exception("Error hiding softwareproduct -  mdh");
                 }
             }
@@ -237,7 +237,8 @@ namespace CDR.DataHolder.IntegrationTests
                 using (var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING))
                 {
                     connection.Open();
-                    connection.ExecuteNonQuery($@"update softwareproduct set softwareproductid = '{ SOFTWAREPRODUCT_ID }' where softwareproductid = 'foo { SOFTWAREPRODUCT_ID }'");
+                    string sqlQuery = string.Format("INSERT INTO [dbo].[SoftwareProduct]([SoftwareProductId],[SoftwareProductName],[SoftwareProductDesc],[LogoUri],[Status],[BrandId]) VALUES ('{0}','MyBudgetHelper',NULL,'https://mocksoftware/mybudgetapp/img/logo.png','ACTIVE','{1}')", SOFTWAREPRODUCT_ID, BRANDID);
+                    connection.ExecuteNonQuery(sqlQuery);
                     if (connection.ExecuteScalarInt32($@"select count(*) from softwareproduct where softwareproductid = '{ SOFTWAREPRODUCT_ID }'") != 1) throw new Exception("Error restoring softwareproduct -  mdh");
                 }
             }

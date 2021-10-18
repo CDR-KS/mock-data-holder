@@ -15,6 +15,8 @@ namespace CDR.DataHolder.IntegrationTests
             // Arrange
             var api = new Infrastructure.API
             {
+                CertificateFilename = CERTIFICATE_FILENAME,
+                CertificatePassword = CERTIFICATE_PASSWORD,
                 HttpMethod = HttpMethod.Get,
                 XV = "1",
                 URL = $"{DH_TLS_PUBLIC_BASE_URL}/cds-au/v1/discovery/outages"

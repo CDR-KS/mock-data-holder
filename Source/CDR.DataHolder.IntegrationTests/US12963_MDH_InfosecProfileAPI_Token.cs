@@ -403,7 +403,7 @@ namespace CDR.DataHolder.IntegrationTests
                     // TODO - ideally, derive persisted grant key from authcode
 
                     // Count, must be 1 row otherwise throw
-                    using var selectCommand = new SqlCommand($"select count(*) from persistedgrants where type = 'authorization_code'", connection);
+                    using var selectCommand = new SqlCommand($"select count(*) from persistedgrants where [type] = 'authorization_code'", connection);
                     var count = selectCommand.ExecuteScalarInt32();
                     if (count != 1)
                     {
@@ -411,7 +411,7 @@ namespace CDR.DataHolder.IntegrationTests
                     }
 
                     // Get key
-                    using var selectCommand2 = new SqlCommand($"select key from persistedgrants where type = 'authorization_code'", connection);
+                    using var selectCommand2 = new SqlCommand($"select [key] from persistedgrants where [type] = 'authorization_code'", connection);
                     return selectCommand2.ExecuteScalarString();
                 }
 
@@ -425,7 +425,7 @@ namespace CDR.DataHolder.IntegrationTests
                 string key = GetKey(connection, authCode);
 
                 // Read data from persistedgrant row
-                using var selectCommand = new SqlCommand($"select data from persistedgrants where key = @key", connection);
+                using var selectCommand = new SqlCommand($"select [data] from persistedgrants where [key] = @key", connection);
                 selectCommand.Parameters.AddWithValue("@key", key);
                 var data = selectCommand.ExecuteScalarString();
 
@@ -437,7 +437,7 @@ namespace CDR.DataHolder.IntegrationTests
                 var patchedData = data.Replace(LIFETIME, LIFETIME_PATCHED);
 
                 // Update data in persistedgrant row
-                using var updateCommand = new SqlCommand($"update persistedgrants set data = @data where key = @key", connection);
+                using var updateCommand = new SqlCommand($"update persistedgrants set [data] = @data where [key] = @key", connection);
                 updateCommand.Parameters.AddWithValue("@key", key);
                 updateCommand.Parameters.AddWithValue("@data", patchedData);
                 updateCommand.ExecuteNonQuery();

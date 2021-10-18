@@ -34,6 +34,8 @@ namespace CDR.DataHolder.IntegrationTests
             // Act
             var response = await new Infrastructure.API
             {
+                CertificateFilename = CERTIFICATE_FILENAME,
+                CertificatePassword = CERTIFICATE_PASSWORD,
                 HttpMethod = HttpMethod.Get,
                 URL = $"{DH_TLS_IDENTITYSERVER_BASE_URL}/.well-known/openid-configuration/jwks",
             }.SendAsync();

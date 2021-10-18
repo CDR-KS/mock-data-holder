@@ -30,12 +30,12 @@ namespace CDR.DataHolder.IntegrationTests
             SqlCommand selectCommand;
             if (key != null)
             {
-                selectCommand = new SqlCommand($"select count(*) from persistedgrants where type=@type and key=@key", connection);
+                selectCommand = new SqlCommand($"select count(*) from persistedgrants where type=@type and [key]=@key", connection);
                 selectCommand.Parameters.AddWithValue("@key", key);
             }
             else
             {
-                selectCommand = new SqlCommand($"select count(*) from persistedgrants where type=@type", connection);
+                selectCommand = new SqlCommand($"select count(*) from persistedgrants where [type]=@type", connection);
             }
             selectCommand.Parameters.AddWithValue("@type", persistedGrantType);
 
