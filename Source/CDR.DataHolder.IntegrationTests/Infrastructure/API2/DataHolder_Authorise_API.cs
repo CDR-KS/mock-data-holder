@@ -46,7 +46,7 @@ namespace CDR.DataHolder.IntegrationTests.Infrastructure.API2
                 };
 
                 using var insertCommand = new SqlCommand($@"
-                    insert into persistedgrants (type, clientId, creationTime, subjectId, data, key)
+                    insert into persistedgrants ([type], [clientId], [creationTime], [subjectId], [data], [key])
                     values (@type, @clientId, @creationTime, @subjectId, @data, @key)",
                     connection);
 
@@ -75,7 +75,7 @@ namespace CDR.DataHolder.IntegrationTests.Infrastructure.API2
                 };
 
                 using var insertCommand = new SqlCommand($@"
-                    insert into persistedgrants (type, clientId, creationTime, subjectId, data, key)
+                    insert into persistedgrants ([type], [clientId], [creationTime], [subjectId], [data], [key])
                     values (@type, @clientId, @creationTime, @subjectId, @data, @key)",
                     connection);
 
@@ -123,7 +123,7 @@ namespace CDR.DataHolder.IntegrationTests.Infrastructure.API2
                 //     expiration = DateTime.UtcNow.AddMinutes(-2);
                 // }
 
-                using var insertCommand = new SqlCommand($"insert into persistedgrants (type, clientId, creationTime, subjectId, data, expiration, key) values (@type, @clientId, @creationTime, @subjectId, @data, @expiration, @key)", connection);
+                using var insertCommand = new SqlCommand($"insert into persistedgrants ([type], [clientId], [creationTime], [subjectId], [data], [expiration], [key]) values (@type, @clientId, @creationTime, @subjectId, @data, @expiration, @key)", connection);
                 insertCommand.Parameters.AddWithValue("@type", "authorization_code");
                 insertCommand.Parameters.AddWithValue("@clientId", SOFTWAREPRODUCT_ID);
                 insertCommand.Parameters.AddWithValue("@creationTime", creationTime);
