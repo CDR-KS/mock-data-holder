@@ -9,6 +9,7 @@ using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
 using System.Linq;
 using System.Threading.Tasks;
 using static CDR.DataHolder.IdentityServer.CdsConstants;
@@ -55,19 +56,30 @@ namespace CDR.DataHolder.IdentityServer.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ArrangementRevocation()
         {
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
+
             var secretParserResult = await _secretParser.ParseAsync(HttpContext);
 
             var clientArrangeRevokeRequest = GetClientArrangementRevocationRequest(secretParserResult);
             if (clientArrangeRevokeRequest == null)
             {
-                _logger.LogError("Request invalid, or missing required params or headers");
+                using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+                {
+                    _logger.LogError("Request invalid, or missing required params or headers");
+                }
                 return await ReturnErrorResponseAndLogEvent(ValidationCheck.CdrArrangementRevocationInvalidRequest, new BadRequestResult());
             }
 
             var client = await _clientService.FindClientById(clientArrangeRevokeRequest.ClientDetails.ClientId);
             if (client == null)
             {
-                _logger.LogError("Invalid clientid provided in request, no matching client found in Auth Server {ClientId}", clientArrangeRevokeRequest.ClientDetails.ClientId);
+                using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+                {
+                    _logger.LogError("Invalid clientid provided in request, no matching client found in Auth Server {ClientId}", clientArrangeRevokeRequest.ClientDetails.ClientId);
+                }
                 return await ReturnErrorResponseAndLogEvent(ValidationCheck.CdrArrangementRevocationInvalidClientId, Unauthorized(null));
             }
 
@@ -76,7 +88,10 @@ namespace CDR.DataHolder.IdentityServer.Controllers
             var softwareProduct = await _idSvrRepository.GetSoftwareProduct(System.Guid.Parse(softwareProductId));
             if (softwareProduct != null && softwareProduct.Status == "REMOVED")
             {
-                _logger.LogError("Software Product ID {SoftwareProductId} is REMOVED", softwareProduct.SoftwareProductId);
+                using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+                {
+                    _logger.LogError("Software Product ID {SoftwareProductId} is REMOVED", softwareProduct.SoftwareProductId);
+                }
                 return await ReturnErrorResponseAndLogEvent(ValidationCheck.CdrArrangementRevocationInvalidClientId, new UnauthorizedResult());
             }
 
@@ -122,7 +137,10 @@ namespace CDR.DataHolder.IdentityServer.Controllers
             }
             else
             {
-                _logger.LogError("Error returned from secretValidator {@SecretValidatorResult}", secretValidatorResult);
+                using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+                {
+                    _logger.LogError("Error returned from secretValidator {@SecretValidatorResult}", secretValidatorResult);
+                }
 
                 if (secretValidatorResult.Error == CdrArrangementRevocationErrorCodes.InvalidClient)
                 {

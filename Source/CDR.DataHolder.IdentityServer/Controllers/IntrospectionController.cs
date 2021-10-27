@@ -10,6 +10,7 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -71,7 +72,10 @@ namespace CDR.DataHolder.IdentityServer.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching client by client_id.");
+                using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+                {
+                    _logger.LogError(ex, "Error fetching client by client_id.");
+                }
                 return Unauthorized(new IntrospectionSubError(IntrospectionErrorCodes.InvalidClient));
             }
 
