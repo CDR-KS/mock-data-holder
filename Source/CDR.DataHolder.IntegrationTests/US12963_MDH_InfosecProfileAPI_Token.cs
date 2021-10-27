@@ -1,23 +1,23 @@
-﻿using System;
+﻿using CDR.DataHolder.IntegrationTests.Extensions;
+using CDR.DataHolder.IntegrationTests.Fixtures;
+using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using IdentityServer4.Stores.Serialization;
+using Jose;
+using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
-using IdentityServer4.Stores.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Xunit;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using Jose;
-using Microsoft.Data.Sqlite;
-using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
-using CDR.DataHolder.IntegrationTests.Extensions;
-using CDR.DataHolder.IntegrationTests.Fixtures;
 
 #nullable enable
 
@@ -397,13 +397,13 @@ namespace CDR.DataHolder.IntegrationTests
         {
             static async Task ExpireAuthCode(string authCode)
             {
-                static string GetKey(SqliteConnection connection, string authCode)
+                static string GetKey(SqlConnection connection, string authCode)
                 {
                     // Not sure how to derive persisted grant key from authcode, so lets just check only 1 authorization_code row and use it's key
                     // TODO - ideally, derive persisted grant key from authcode
 
                     // Count, must be 1 row otherwise throw
-                    using var selectCommand = new SqliteCommand($"select count(*) from persistedgrants where type = 'authorization_code'", connection);
+                    using var selectCommand = new SqlCommand($"select count(*) from persistedgrants where [type] = 'authorization_code'", connection);
                     var count = selectCommand.ExecuteScalarInt32();
                     if (count != 1)
                     {
@@ -411,7 +411,7 @@ namespace CDR.DataHolder.IntegrationTests
                     }
 
                     // Get key
-                    using var selectCommand2 = new SqliteCommand($"select key from persistedgrants where type = 'authorization_code'", connection);
+                    using var selectCommand2 = new SqlCommand($"select [key] from persistedgrants where [type] = 'authorization_code'", connection);
                     return selectCommand2.ExecuteScalarString();
                 }
 
@@ -419,13 +419,13 @@ namespace CDR.DataHolder.IntegrationTests
                 const string LIFETIME = @"""Lifetime"":600,";
                 string LIFETIME_PATCHED = $@"""Lifetime"":{LIFETIME_SECONDS},";
 
-                using var connection = new SqliteConnection(IDENTITYSERVER_CONNECTIONSTRING);
+                using var connection = new SqlConnection(IDENTITYSERVER_CONNECTIONSTRING);
                 connection.Open();
 
                 string key = GetKey(connection, authCode);
 
                 // Read data from persistedgrant row
-                using var selectCommand = new SqliteCommand($"select data from persistedgrants where key = @key", connection);
+                using var selectCommand = new SqlCommand($"select [data] from persistedgrants where [key] = @key", connection);
                 selectCommand.Parameters.AddWithValue("@key", key);
                 var data = selectCommand.ExecuteScalarString();
 
@@ -437,7 +437,7 @@ namespace CDR.DataHolder.IntegrationTests
                 var patchedData = data.Replace(LIFETIME, LIFETIME_PATCHED);
 
                 // Update data in persistedgrant row
-                using var updateCommand = new SqliteCommand($"update persistedgrants set data = @data where key = @key", connection);
+                using var updateCommand = new SqlCommand($"update persistedgrants set [data] = @data where [key] = @key", connection);
                 updateCommand.Parameters.AddWithValue("@key", key);
                 updateCommand.Parameters.AddWithValue("@data", patchedData);
                 updateCommand.ExecuteNonQuery();

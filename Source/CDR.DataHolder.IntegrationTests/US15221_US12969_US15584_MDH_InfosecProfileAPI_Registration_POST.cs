@@ -74,6 +74,8 @@ namespace CDR.DataHolder.IntegrationTests
         // TODO - Don't think dynamic client registration works. AC01 above only works because the software product being registered already exists in MDH.DB softwareproduct table (from the seeddata)
         // TODO - Add extra test (ACX01) that attempts to register software product that doesn't exist in MDH.DB softwareproduct table
         // public async Task AC01X_Post_WithUnregistedSoftwareProduct_ShouldRespondWith_201Created_CreatedProfile(string ssaVersion)
+        // see US15221_US12969_US15586_MDH_InfosecProfileAPI_Registration_GET > AC10b_Get_WithInvalidClientId_ShouldRespondWith_401Unauthorized_WWWAuthenticateHeader()
+        // deletes then registers software product that doesn't exist in MDH.DB softwareproduct table
 
         [Fact]
         public async Task AC02_Post_WithRegistedSoftwareProduct_ShouldRespondWith_400BadRequest_DuplicateErrorResponse()

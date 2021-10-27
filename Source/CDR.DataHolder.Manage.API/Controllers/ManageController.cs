@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using CDR.DataHolder.Domain.Entities;
+﻿using CDR.DataHolder.Domain.Entities;
 using CDR.DataHolder.Domain.Repositories;
 using CDR.DataHolder.Repository.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog.Context;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace CDR.DataHolder.Manage.API.Controllers
 {
@@ -24,11 +25,10 @@ namespace CDR.DataHolder.Manage.API.Controllers
         private readonly IStatusRepository _statusRepository;
         private readonly DataHolderDatabaseContext _dbContext;
 
-        public ManageController(
-            IConfiguration config,
-            ILogger<ManageController> logger,
-            DataHolderDatabaseContext dbContext,
-            IStatusRepository statusRepository)
+        public ManageController(IConfiguration config,
+                                ILogger<ManageController> logger,
+                                DataHolderDatabaseContext dbContext,
+                                IStatusRepository statusRepository)
         {
             _config = config;
             _logger = logger;
@@ -40,6 +40,11 @@ namespace CDR.DataHolder.Manage.API.Controllers
         [Route("Metadata")]
         public async Task<IActionResult> LoadData()
         {
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
+
             using var reader = new StreamReader(Request.Body);
             string json = await reader.ReadToEndAsync();
 
@@ -60,6 +65,11 @@ namespace CDR.DataHolder.Manage.API.Controllers
         [Route("Metadata")]
         public async Task GetData()
         {
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
+
             var metadata = await _dbContext.GetJsonFromDatabase(_logger);
 
             // Return the raw JSON response.
@@ -72,7 +82,10 @@ namespace CDR.DataHolder.Manage.API.Controllers
         [Route("refresh-dr-metadata")]
         public async Task<IActionResult> RefreshDataRecipients()
         {
-            _logger.LogInformation($"Request received to {nameof(ManageController)}.{nameof(RefreshDataRecipients)}");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
 
             // Call the Register to get the data recipients list.
             var endpoint = _config["Register:GetDataRecipientsEndpoint"];
@@ -94,7 +107,10 @@ namespace CDR.DataHolder.Manage.API.Controllers
         [Route("refresh-dr-status")]
         public async Task<IActionResult> RefreshDataRecipientStatus()
         {
-            _logger.LogInformation($"Request received to {nameof(ManageController)}.{nameof(RefreshDataRecipientStatus)}");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
 
             // Call the Register to get the data recipient status list.
             var endpoint = _config["Register:GetDataRecipientStatusEndpoint"];
@@ -119,7 +135,10 @@ namespace CDR.DataHolder.Manage.API.Controllers
         [Route("refresh-sp-status")]
         public async Task<IActionResult> RefreshSoftwareProductStatus()
         {
-            _logger.LogInformation($"Request received to {nameof(ManageController)}.{nameof(RefreshSoftwareProductStatus)}");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
 
             // Call the Register to get the software product status list.
             var endpoint = _config["Register:GetSoftwareProductsStatusEndpoint"];
@@ -141,7 +160,10 @@ namespace CDR.DataHolder.Manage.API.Controllers
 
         private async Task<string> GetData(string endpoint, int version)
         {
-            _logger.LogInformation($"Retrieving data from {endpoint} (x-v: {version})...");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Retrieving data from {endpoint} (x-v: {version})...");
+            }
 
             var httpClient = GetHttpClient();
             httpClient.DefaultRequestHeaders.Add("x-v", version.ToString());

@@ -1,6 +1,12 @@
+using CDR.DataHolder.API.Infrastructure.IdPermanence;
+using CDR.DataHolder.IntegrationTests.Extensions;
+using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
+using FluentAssertions;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -8,14 +14,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CDR.DataHolder.API.Infrastructure.IdPermanence;
-using CDR.DataHolder.IntegrationTests.Extensions;
-using CDR.DataHolder.IntegrationTests.Infrastructure;
-using CDR.DataHolder.IntegrationTests.Infrastructure.API2;
-using FluentAssertions;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Xunit;
 
 #nullable enable
@@ -649,10 +647,10 @@ namespace CDR.DataHolder.IntegrationTests
 
         static protected string GetStatus(Table table, string id)
         {
-            using var connection = new SqliteConnection(DATAHOLDER_CONNECTIONSTRING);
+            using var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING);
             connection.Open();
 
-            using var selectCommand = new SqliteCommand($"select status from {table} where {table}ID = @id", connection);
+            using var selectCommand = new SqlCommand($"select status from {table} where {table}ID = @id", connection);
             selectCommand.Parameters.AddWithValue("@id", id);
 
             return selectCommand.ExecuteScalarString();
@@ -660,10 +658,10 @@ namespace CDR.DataHolder.IntegrationTests
 
         static protected void SetStatus(Table table, string id, string status)
         {
-            using var connection = new SqliteConnection(DATAHOLDER_CONNECTIONSTRING);
+            using var connection = new SqlConnection(DATAHOLDER_CONNECTIONSTRING);
             connection.Open();
 
-            using var updateCommand = new SqliteCommand($"update {table} set status = @status where {table}ID = @id", connection);
+            using var updateCommand = new SqlCommand($"update {table} set status = @status where {table}ID = @id", connection);
             updateCommand.Parameters.AddWithValue("@id", id);
             updateCommand.Parameters.AddWithValue("@status", status);
             updateCommand.ExecuteNonQuery();

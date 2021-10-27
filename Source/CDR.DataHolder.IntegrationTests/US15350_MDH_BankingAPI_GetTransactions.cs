@@ -33,7 +33,7 @@ namespace CDR.DataHolder.IntegrationTests
         //     var _date1 = DateTime.Parse(date1);
         //     var _date2 = DateTime.Parse(date2);
 
-        //     using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(SQLITECONNECTIONSTRING).Options);
+        //     using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(SQLITECONNECTIONSTRING).Options);
 
         //     var transactions = dbContext.Transactions.AsNoTracking()
         //         .Select(transaction => new
@@ -74,7 +74,7 @@ namespace CDR.DataHolder.IntegrationTests
             var effectiveOldestTime = oldestTime;
             if (effectiveOldestTime == null) { effectiveOldestTime = DEFAULT_EFFECTIVEOLDESTTIME; }
 
-            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(DATAHOLDER_CONNECTIONSTRING).Options);
+            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(DATAHOLDER_CONNECTIONSTRING).Options);
 
             var transactions = dbContext.Transactions.AsNoTracking()
                 .Include(transaction => transaction.Account)
@@ -389,6 +389,9 @@ namespace CDR.DataHolder.IntegrationTests
         [Theory]
         [InlineData("2021-05-25T00:00:00.000Z", 2)]
         [InlineData("2021-05-26T00:00:00.000Z", 0)]
+        // NB: If the appsettings.ENV.json > SeedData > OffsetDates = true - then the reference date of 2021-05-01 for the data seeded into the database will be moved to now
+        //     SO THE ABOVE TEST DATES MUST ALSO BE MOVED as per the OffsetDates as set in 010 Repository > ...\Repository\Infrastructure\Extensions.cs
+        //     else this test will FAIL.
         public async Task AC05_Get_WithOldestTime_ShouldRespondWith_200OK_FilteredRecords(string oldestTime, int expectedRecordCount)
         {
             await Test(ACCOUNTID_JANE_WILSON, TokenType.JANE_WILSON, oldestTime: oldestTime, expectedRecordCount: expectedRecordCount);
@@ -397,6 +400,9 @@ namespace CDR.DataHolder.IntegrationTests
         [Theory]
         [InlineData("2021-03-01T00:00:00.000Z", 0)]
         [InlineData("2021-03-02T00:00:00.000Z", 2)]
+        // NB: If the appsettings.ENV.json > SeedData > OffsetDates = true - then the reference date of 2021-05-01 for the data seeded into the database will be moved to now
+        //     SO THE ABOVE TEST DATES MUST ALSO BE MOVED as per the OffsetDates as set in 010 Repository > ...\Repository\Infrastructure\Extensions.cs
+        //     else this test will FAIL.
         public async Task AC05b_Get_WithNewestTime_ShouldRespondWith_200OK_FilteredRecords(string newestTime, int expectedRecordCount)
         {
             await Test(ACCOUNTID_JANE_WILSON, TokenType.JANE_WILSON, newestTime: newestTime, expectedRecordCount: expectedRecordCount);
@@ -433,6 +439,8 @@ namespace CDR.DataHolder.IntegrationTests
         [Theory]
         [InlineData("IOU", 2)]
         [InlineData("iou", 2)]
+        // NB: If the appsettings.ENV.json > SeedData > OffsetDates = true - then the reference date of 2021-05-01 for the data seeded into the database will be moved to now
+        //     THIS TEST WILL FAIL.
         public async Task AC10_Get_WithText_ShouldRespondWith_200OK_FilteredRecords(string text, int expectedRecordCount)
         {
             await Test(ACCOUNTID_JANE_WILSON, TokenType.JANE_WILSON, text: text, expectedRecordCount: expectedRecordCount,

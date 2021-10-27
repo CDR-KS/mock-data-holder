@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
+using System.Threading.Tasks;
 
 namespace CDR.DataHolder.Public.API.Controllers
 {
@@ -23,7 +21,11 @@ namespace CDR.DataHolder.Public.API.Controllers
         [HttpGet]
         public async Task GetStatus()
         {
-            _logger.LogInformation($"Request received to {nameof(DiscoveryController)}.{nameof(GetStatus)}");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
+
             // var json = await System.IO.File.ReadAllTextAsync("data/status.json");
             var json = await System.IO.File.ReadAllTextAsync("Data/status.json");
 
@@ -37,7 +39,11 @@ namespace CDR.DataHolder.Public.API.Controllers
         [HttpGet]
         public async Task GetOutages()
         {
-            _logger.LogInformation($"Request received to {nameof(DiscoveryController)}.{nameof(GetOutages)}");
+            using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+            {
+                _logger.LogInformation($"Received request to {ControllerContext.RouteData.Values["action"]}");
+            }
+
             // var json = await System.IO.File.ReadAllTextAsync("data/outages.json");
             var json = await System.IO.File.ReadAllTextAsync("Data/outages.json");
 

@@ -12,6 +12,7 @@ using CDR.DataHolder.Resource.API.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -54,7 +55,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 		[ApiVersion("1")]
 		public async Task<IActionResult> GetCustomer()
 		{
-			_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetCustomer)}");
+			using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+			{
+				_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetCustomer)}");
+			}
 
 			// Each customer id is different for each ADR based on PPID.
 			// Therefore we need to look up the CustomerClient table to find the actual customer id.
@@ -97,7 +101,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 			[FromQuery(Name = "page"), CheckPage] string page,
 			[FromQuery(Name = "page-size"), CheckPageSize] string pageSize)
 		{
-			_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetAccounts)}");
+			using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+			{
+				_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetAccounts)}");
+			}
 
 			// Each customer id is different for each ADR based on PPID.
 			// Therefore we need to look up the CustomerClient table to find the actual customer id.
@@ -157,7 +164,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 		[ApiVersion("1")]
 		public async Task<IActionResult> GetTransactions([FromQuery] RequestAccountTransactions request)
 		{
-			_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetTransactions)}");
+			using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+			{
+				_logger.LogInformation($"Request received to {nameof(ResourceController)}.{nameof(GetTransactions)}");
+			}
 
 			// Each customer id is different for each ADR based on PPID.
 			// Therefore we need to look up the CustomerClient table to find the actual customer id.
@@ -188,7 +198,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 
 			if (string.IsNullOrEmpty(request.AccountId))
 			{
-				_logger.LogError("Account Id could not be retrived from request.");
+				using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+				{
+					_logger.LogError("Account Id could not be retrived from request.");
+				}
 				return new NotFoundObjectResult(new ResponseErrorList(Error.NotFound()));
 			}
 			else
@@ -197,7 +210,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 				{
 					// A valid consent exists with bank:transactions:read scope but this Account Id could not be found for the supplied Customer Id.
 					// This scenario will take precedence
-					_logger.LogInformation($"Customer does not have access to this Account Id. Customer Id: {request.CustomerId}, Account Id: {request.AccountId}");
+					using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+					{
+						_logger.LogInformation($"Customer does not have access to this Account Id. Customer Id: {request.CustomerId}, Account Id: {request.AccountId}");
+					}
 					return new NotFoundObjectResult(new ResponseErrorList(Error.NotFound()));
 				}
 
@@ -205,7 +221,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 				{
 					// A valid consent exists with bank:transactions:read scope and the Account Id can be found for the supplied customer
 					// but this Account Id is not in the list of consented Account Ids
-					_logger.LogInformation($"Consent has not been granted for this Account Id: {request.AccountId}");
+					using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+					{
+						_logger.LogInformation($"Consent has not been granted for this Account Id: {request.AccountId}");
+					}
 					return new NotFoundObjectResult(new ResponseErrorList(Error.ConsentNotFound()));
 				}
 			}
@@ -233,7 +252,10 @@ namespace CDR.DataHolder.Resource.API.Controllers
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Could not decrypt account id.");
+				using (LogContext.PushProperty("MethodName", ControllerContext.RouteData.Values["action"].ToString()))
+				{
+					_logger.LogError(ex, "Could not decrypt account id.");
+				}
 			}
 
 			return accountId;

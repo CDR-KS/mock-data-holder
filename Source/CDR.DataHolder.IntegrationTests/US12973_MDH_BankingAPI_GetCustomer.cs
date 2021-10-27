@@ -45,7 +45,7 @@ namespace CDR.DataHolder.IntegrationTests
             ));
 
             // Get expected response 
-            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlite(DATAHOLDER_CONNECTIONSTRING).Options);
+            using var dbContext = new DataHolderDatabaseContext(new DbContextOptionsBuilder<DataHolderDatabaseContext>().UseSqlServer(DATAHOLDER_CONNECTIONSTRING).Options);
             var expectedResponse = new
             {
                 data = dbContext.Customers.AsNoTracking()

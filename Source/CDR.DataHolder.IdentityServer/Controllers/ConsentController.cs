@@ -20,6 +20,7 @@ using CDR.DataHolder.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using static CDR.DataHolder.IdentityServer.CdsConstants;
+using Serilog.Context;
 
 namespace CDR.DataHolder.IdentityServer.Controllers
 {
@@ -185,7 +186,10 @@ namespace CDR.DataHolder.IdentityServer.Controllers
 			}
 			else
 			{
-				_logger.LogError("No consent request matching request: {0}", returnUrl);
+				using (LogContext.PushProperty("MethodName", "BuildViewModelAsync"))
+				{
+					_logger.LogError("No consent request matching request: {0}", returnUrl);
+				}
 			}
 
 			return null;
